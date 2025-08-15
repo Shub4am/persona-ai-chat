@@ -1,15 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Oxanium } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const oxanium = Oxanium({
+  variable: "--font-poppins",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "Create Next App",
@@ -20,9 +17,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${oxanium.className}  antialiased`}
       >
+        <Toaster toastOptions={{
+          style: { background: "black", color: "white", fontSize: "16px" }
+        }} />
         {children}
+        {/* Disclaimer */}
+        <div className="text-xl text-gray-300 text-center p-4 bg-gradient-to-br from-gray-700 via-black to-gray-800 ">
+          <p>
+            This is an AI-generated <strong>persona of</strong> <span className='text-amber-500'> Hitesh Choudhary / Piyush Garg </span>
+            for educational/demo use.
+          </p>
+        </div>
       </body>
     </html>
   );
