@@ -45,16 +45,47 @@ ${personaTranscripts}
             parts: [{ text: `${systemPrompt}\n\n${conversation[0].parts[0].text}` }],
         };
 
+
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: conversation,
         });
 
-        const replyText =
+        let res =
             response?.candidates?.[0]?.content?.parts?.[0]?.text ||
             "Sorry, reply to nahi de sakta abhi";
 
-        return NextResponse.json({ reply: replyText });
+        const codeRequestRegex = /(code|program|script|function|example).*\b(in (javascript|js|python|py|java|c\+\+|c#|typescript|ts|go|rust|php|ruby|swift|kotlin|dart))|write (a|the)? code|show (me )?code|how to.*code/i;
+        const userMessage = messages[messages.length - 1]?.content || "";
+        if (codeRequestRegex.test(userMessage)) {
+            const codeBlocks = [];
+            let explanation = res;
+            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+            let match;
+            let lastIndex = 0;
+            let explanationParts = [];
+            while ((match = codeBlockRegex.exec(res)) !== null) {
+                if (match.index > lastIndex) {
+                    explanationParts.push(res.slice(lastIndex, match.index));
+                }
+                codeBlocks.push({
+                    lang: match[1] || "",
+                    code: match[2].trim()
+                });
+                lastIndex = codeBlockRegex.lastIndex;
+            }
+            if (lastIndex < res.length) {
+                explanationParts.push(res.slice(lastIndex));
+            }
+            explanation = explanationParts.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+            let formatted = explanation;
+            if (codeBlocks.length > 0) {
+                formatted += "\n\n" + codeBlocks.map(cb => `\u0060\u0060\u0060${cb.lang}\n${cb.code}\n\u0060\u0060\u0060`).join("\n\n");
+            }
+            res = formatted.trim();
+        }
+
+        return NextResponse.json({ reply: res });
 
     } catch (error) {
         console.error("API error:", error);

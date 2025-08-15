@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import PersonaDetails from './components/PersonaDetails';
 import SessionInfo from './components/SessionInfo';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function Home() {
   const [persona, setPersona] = useState("hitesh");
@@ -135,11 +138,36 @@ export default function Home() {
                 <div className="space-y-4">
                   {messages.map((msg, index) => (
                     <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] sm:max-w-xs lg:max-md px-3 md:px-4 py-2 md:py-3 rounded-lg ${msg.role === 'user'
+                      <div className={`max-w-[90%]  px-3 md:px-4 py-2 md:py-3 rounded-lg ${msg.role === 'user'
                         ? 'bg-blue-600 text-white'
                         : 'bg-gradient-to-br from-slate-800/60 to-slate-900/60 rounded-2xl text-white backdrop-blur-xl border border-white/20'
                         }`}>
-                        <p className="text-sm md:text-base leading-relaxed">{msg.content}</p>
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, children, ...props }) {
+                              const match = /language-(\w+)/.exec(props.className || '');
+                              const language = match ? match[1] : '';
+                              if (!inline && language) {
+                                return (
+                                  <SyntaxHighlighter
+                                    style={oneDark}
+                                    language={language}
+                                    PreTag="div"
+                                  >
+                                    {String(children).replace(/\n$/, '')}
+                                  </SyntaxHighlighter>
+                                );
+                              }
+                              return (
+                                <code style={{ background: '#222', color: '#fff', borderRadius: 4, padding: '2px 4px' }}>
+                                  {children}
+                                </code>
+                              );
+                            }
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
                         <p className="text-xs mt-1 opacity-70">
                           {new Date(msg.timestamp).toLocaleTimeString()}
                         </p>
