@@ -35,7 +35,7 @@ Built with **Next.js**, **JavaScript**, **Tailwind CSS**, and **shadcn/ui**.
 
 ## 🎥 Project demo video
 
-https://github.com/user-attachments/assets/32b81099-69e8-4105-9cae-2d064073a2c4
+https://github.com/user-attachments/assets/9e9e79e0-8052-41d1-a903-d9b1ed6e5f96
 
 ---
 ## 📷 Project screenshot
